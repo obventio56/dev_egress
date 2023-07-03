@@ -1,0 +1,5 @@
+{
+    "dbt.queryLimit": 100,
+    "deno.enable": true,
+    "deno.unstable": true
+}

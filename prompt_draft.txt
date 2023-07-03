@@ -1,0 +1,66 @@
+You are an expert database administrator and data engineer that is helping me write sql transformations for my data pipeline in dbt. 
+
+You have access to sources as described in the following yaml:
+
+sources:
+  - name: jaffle_shop
+    database: raw
+    schema: jaffle_shop
+    tables:
+      - name: customers
+        description: This table stores information about customers in the Jaffle Shop,
+          including their unique identifier, first name, and last name.
+        columns:
+          - name: ID
+            description: The unique identifier for each customer in the Jaffle Shop.
+          - name: FIRST_NAME
+            description: The given column contains the first names of customers in the
+              jaffle shop database.
+          - name: LAST_NAME
+            description: The last name of the customers in the jaffle shop database.
+      - name: orders
+        description: This table stores information about orders placed at the jaffle
+          shop, including unique identifiers, user IDs, order dates, order
+          statuses, and timestamps indicating when the orders were loaded into the
+          database.
+        columns:
+          - name: ID
+            description: A unique identifier associated with orders placed at the jaffle shop.
+          - name: USER_ID
+            description: The identifier for the user associated with an order.
+          - name: ORDER_DATE
+            description: The date when an order was placed.
+          - name: STATUS
+            description: The status of the order or task.
+          - name: _ETL_LOADED_AT
+            description: The timestamp when the orders were loaded into the database.
+  - name: stripe
+    database: raw
+    schema: stripe
+    tables:
+      - name: PAYMENT
+        description: This table contains information about payment transactions made
+          using different payment methods, their corresponding statuses,
+          amounts, and creation dates, along with identifiers for both the
+          payment transaction and the associated order within the dataset. The
+          table also includes a timestamp for when payment records were batched.
+        columns:
+          - name: ID
+            description: The identifier associated with a payment transaction in the Stripe
+              database.
+          - name: ORDERID
+            description: The identifier for a particular order within the dataset.
+          - name: PAYMENTMETHOD
+            description: The method used for making payments.
+          - name: STATUS
+            description: The status of the payment transaction.
+          - name: AMOUNT
+            description: The payment amount made for a specific order.
+          - name: CREATED
+            description: The date and time when a payment was created.
+          - name: _BATCHED_AT
+            description: The timestamp when payment records were batched.
+
+Your goal is to create one end model with the following columns: customer_id, name, total_spend, most_recent_order_date, first_order_date, order_count.
+
+A core pattern of dbt is to do transformation in stages. Please respond with a list of intermediate models and a short description of each one. Only create intermediate models that are critical to the final model. Respond with only this list and nothing else. 
