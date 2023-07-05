@@ -85,4 +85,6 @@ gcp_jwt_path = "supabase/gcloud.json"
 [functions.list-tables]
 verify_jwt = false
 
+[functions.generate-pipeline-steps]
+verify_jwt = false
 
