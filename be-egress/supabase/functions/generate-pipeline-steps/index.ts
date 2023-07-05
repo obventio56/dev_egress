@@ -58,7 +58,7 @@ serve(async (req) => {
     return new Response("OK", { headers: corsHeaders });
   }
 
-  const {models: selectedModels, destinationColumns} = await req.json();
+  const { models: selectedModels, destinationColumns } = await req.json();
 
   const transformedModels = {
     models: Object.values(selectedModels).map((m) => {
@@ -87,8 +87,9 @@ serve(async (req) => {
 
   const stepsRaw = await prompt(chain);
   const steps = JSON.parse(stepsRaw);
+  chain.push({ role: "assistant", content: stepsRaw });
 
-  return new Response(JSON.stringify(steps), {
+  return new Response(JSON.stringify({ chain, steps }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
     status: 200,
   });
