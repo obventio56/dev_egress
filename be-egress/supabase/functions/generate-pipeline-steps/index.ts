@@ -26,7 +26,7 @@ Your goal is to create one end model with the following columns: ${destinationCo
 A core pattern of dbt is to do transformation in stages. Imagine what intermediate models you would create for this transformation. Only include intermediate models that are critical to the final result. Please respond with a list of the meaningful names for each of these intermediate models as well as the final model. Include a short description of each model. Please respond with a valid JSON array of objects with the keys "name", and "description". Respond with only this list and nothing else.
 `;
 
-const prompt = async (messages, model = "gpt-3.5-turbo") => {
+const prompt = async (messages, model = "gpt-4") => {
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",

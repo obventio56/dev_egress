@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
+import Image from "next/image";
+import Video from "next/video";
+
 export default function Home({ models }) {
   const supabaseClient = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -13,12 +16,13 @@ export default function Home({ models }) {
   const [reviewingModelName, setReviewingModelName] = useState("");
   const [modelsToReview, setModelsToReview] = useState({});
   const [destinationColumns, setDestinationColumns] = useState({ column1: "" });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [pipelineStages, setPipelineStages] = useState({});
   const [chainState, setChainState] = useState([]);
   const [generatedModels, setGeneratedModels] = useState({});
   const [currentModelName, setCurrentModelName] = useState("");
   const [modelEditor, setModelEditor] = useState("");
+  const [nextStageName, setNextStageName] = useState("");
   useEffect(() => {
     const selectedModelsNames = Object.entries(selectedModels)
       .filter(([_, selected]) => selected)
@@ -79,6 +83,8 @@ export default function Home({ models }) {
 
     if (remainingStages.length == 0) {
       console.log("All done!");
+      setModelEditor("done");
+      setLoading(false);
       return;
     }
 
@@ -88,6 +94,7 @@ export default function Home({ models }) {
     }
 
     const nextStage = remainingStages[0];
+    setNextStageName(nextStage);
 
     const {
       data: { chain, stepResult: generatedModel },
@@ -123,9 +130,16 @@ export default function Home({ models }) {
   };
 
   return (
-    <div className="w-full flex">
-      <div className="p-5 border-r-2 border-black">
-        <h3>Select source models</h3>
+    <div className="grid grid-cols-[max-content_auto]">
+      <div className="px-10 py-5 border-r border-r-foreground/10 flex flex-col items-center">
+        <h3 className="text-lg font-bold mb-2">Data sources</h3>
+        <Image
+          className="my-2"
+          src="/dbt_logo.svg"
+          width={80}
+          height={100}
+          alt="DBT Logo"
+        />
         <ul>
           {models.models.map((m, idx) => (
             <li key={`model-${idx}`}>
@@ -140,44 +154,65 @@ export default function Home({ models }) {
                 }
                 type="checkbox"
               />
-              <span>{m.name}</span>
+              <span className="pl-2">{m.name}</span>
             </li>
           ))}
         </ul>
+        <Image
+          className="mt-10"
+          src="/snowflake_logo.png"
+          width={120}
+          height={100}
+          alt="DBT Logo"
+        />
+        <button className="py-2 px-3 my-5 border-2 border-black  rounded-md font-black text-sm ">
+          Link Snowflake
+        </button>
       </div>
-      <div className="p-4">
+      <div className="px-10 py-5 grid grid-cols-[min-content_auto] w-2/3 auto-rows-min gap-x-5">
         {loading ? (
-          <div>Loading...</div>
+          <div className="col-span-2 h-screen">
+            <video autoPlay loop ><source src="/egress_blob.mp4"/></video>
+          </div>
         ) : (
           <>
             {!!modelsToReview && !!reviewingModelName && (
               <>
-                <h3>Review models</h3>
-                <div>Name: {reviewingModelName}</div>
-                <div>
-                  Description:{" "}
-                  <input
-                    type="text"
-                    value={modelsToReview[reviewingModelName].description}
-                    onChange={(e) =>
-                      setModelsToReview({
-                        ...modelsToReview,
-                        [reviewingModelName]: {
-                          ...modelsToReview[reviewingModelName],
-                          description: e.target.value,
-                        },
-                      })
-                    }
-                  />
+                <h3 className="font-black text-3xl mb-3 col-span-2">
+                  Confirm model documentation
+                </h3>
+                <span className="font-bold mr-1 py-1">Model name: </span>
+                <span className="self-center">{reviewingModelName}</span>
+                <span className="font-bold mr-1">Description:</span>
+                <input
+                  className="border  px-1 border-black rounded "
+                  type="text"
+                  value={modelsToReview[reviewingModelName].description}
+                  onChange={(e) =>
+                    setModelsToReview({
+                      ...modelsToReview,
+                      [reviewingModelName]: {
+                        ...modelsToReview[reviewingModelName],
+                        description: e.target.value,
+                      },
+                    })
+                  }
+                />
+                <div className="font-bold mr-1 text-xl mt-7 col-span-2 mb-3">
+                  Columns:{" "}
                 </div>
-                <div>Columns: </div>
-                <ul>
-                  {Object.values(
-                    modelsToReview[reviewingModelName].columns
-                  ).map((c, idx) => (
-                    <li key={`column-${idx}`}>
-                      {c.name}:{" "}
+                {Object.values(modelsToReview[reviewingModelName].columns).map(
+                  (c, idx) => (
+                    <>
+                      <span
+                        key={`column-span-${idx}`}
+                        className="font-bold mr-1 my-1"
+                      >
+                        {c.name}:
+                      </span>
                       <input
+                        key={`column-input-${idx}`}
+                        className="border px-1 border-black rounded self-center"
                         type="text"
                         value={c.description}
                         onChange={(e) =>
@@ -196,13 +231,13 @@ export default function Home({ models }) {
                           })
                         }
                       />
-                    </li>
-                  ))}
-                </ul>
+                    </>
+                  )
+                )}
                 {Object.values(modelsToReview).filter((m) => !m.reviewed)
                   .length > 0 && (
                   <button
-                    className="border-2 p-2 border-black rounded-md"
+                    className="py-2 px-3 my-5 border-2 border-black  rounded-md font-black text-sm "
                     onClick={() => {
                       setModelsToReview({
                         ...modelsToReview,
@@ -233,120 +268,150 @@ export default function Home({ models }) {
               Object.values(modelsToReview).length > 0 &&
               Object.values(pipelineStages).length === 0 && (
                 <>
-                  <h4>Destination column names</h4>
-                  <ul>
-                    {Object.entries(destinationColumns).map(([k, v], idx) => (
-                      <li key={`column-${idx}`}>
-                        <input
-                          type="text"
-                          value={v}
-                          onChange={(e) =>
-                            setDestinationColumns({
-                              ...destinationColumns,
-                              [k]: e.target.value,
-                            })
-                          }
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    onClick={() => {
-                      setDestinationColumns({
-                        ...destinationColumns,
-                        [`column${Object.keys(destinationColumns).length + 1}`]:
-                          "",
-                      });
-                    }}
-                    className="border-2 p-2 border-black rounded-md"
-                  >
-                    Add Column
-                  </button>
-                  <button
-                    onClick={submitModels}
-                    className="border-2 p-2 border-black rounded-md"
-                  >
-                    Submit
-                  </button>
+                  <h4 className="font-black text-3xl mb-3 col-span-2">
+                    Destination schema columns
+                  </h4>
+                  {Object.entries(destinationColumns).map(([k, v], idx) => (
+                    <div key={`column-${idx}`} className="col-span-2">
+                      <input
+                        className="border px-1 border-black rounded self-center w-1/3 my-1"
+                        placeholder={`Column ${idx + 1}`}
+                        type="text"
+                        value={v}
+                        onChange={(e) =>
+                          setDestinationColumns({
+                            ...destinationColumns,
+                            [k]: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  ))}
+                  <div className="col-span-2">
+                    <button
+                      onClick={() => {
+                        setDestinationColumns({
+                          ...destinationColumns,
+                          [`column${
+                            Object.keys(destinationColumns).length + 1
+                          }`]: "",
+                        });
+                      }}
+                      className="py-2 px-3 my-5 border-2 bg-black text-white  rounded-md font-black text-sm "
+                    >
+                      Add Column
+                    </button>
+                    <button
+                      onClick={submitModels}
+                      className="py-2 px-3 my-5 border-2 border-black  rounded-md font-black text-sm ml-2"
+                    >
+                      Submit
+                    </button>
+                  </div>
                 </>
               )}
             {Object.values(pipelineStages).length > 0 &&
               Object.values(generatedModels).length === 0 && (
                 <>
-                  <h4>Review models to create</h4>
-                  <ul>
-                    {Object.values(pipelineStages).map((s, idx) => (
-                      <li key={`stage-${idx}`}>
-                        <input
-                          type="text"
-                          value={s.name}
-                          onChange={(e) => {
-                            setPipelineStages({
-                              ...pipelineStages,
-                              [s.originalName]: {
-                                ...s,
-                                name: e.target.value,
-                              },
-                            });
-                          }}
-                        />
-                        :
-                        <input
-                          type="text"
-                          value={s.description}
-                          onChange={(e) => {
-                            setPipelineStages({
-                              ...pipelineStages,
-                              [s.originalName]: {
-                                ...s,
-                                description: e.target.value,
-                              },
-                            });
-                          }}
-                        />
-                      </li>
-                    ))}
-                  </ul>
+                  <h4 className="font-black text-3xl mb-3 col-span-2">
+                    Review pipeline stages
+                  </h4>
+                  <div className="font-bold mr-1">Name</div>
+                  <div className="font-bold mr-1 ">Description</div>
+                  {Object.values(pipelineStages).map((s, idx) => (
+                    <>
+                      <input
+                        type="text"
+                        className="border px-1 border-black rounded self-center my-1"
+                        value={s.name}
+                        onChange={(e) => {
+                          setPipelineStages({
+                            ...pipelineStages,
+                            [s.originalName]: {
+                              ...s,
+                              name: e.target.value,
+                            },
+                          });
+                        }}
+                      />
+
+                      <input
+                        type="text"
+                        className="border px-1 border-black rounded self-center w-full my-1"
+                        value={s.description}
+                        onChange={(e) => {
+                          setPipelineStages({
+                            ...pipelineStages,
+                            [s.originalName]: {
+                              ...s,
+                              description: e.target.value,
+                            },
+                          });
+                        }}
+                      />
+                    </>
+                  ))}
+                  <div className="col-span-2">
+                    <button
+                      onClick={() => {
+                        const stageName = `new_stage_${
+                          Object.keys(pipelineStages).length + 1
+                        }`;
+                        setPipelineStages({
+                          ...pipelineStages,
+                          [stageName]: {
+                            originalName: stageName,
+                            name: "",
+                            description: "",
+                          },
+                        });
+                      }}
+                      className="py-2 px-3 my-5 border-2 bg-black text-white  rounded-md font-black text-sm "
+                    >
+                      Add Stage
+                    </button>
+                    <button
+                      className="py-2 px-3 my-5 border-2 border-black  rounded-md font-black text-sm ml-2"
+                      onClick={submitStageReview}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </>
+              )}
+            {Object.values(generatedModels).length > 0 &&
+              modelEditor !== "done" && (
+                <>
+                  <h4 className="font-black text-3xl mb-3 col-span-2">
+                    {nextStageName}
+                  </h4>
+                  <textarea
+                    className="col-span-2 h-96 p-2 border-2 border-black rounded-md"
+                    value={modelEditor}
+                    onChange={(e) => setModelEditor(e.target.value)}
+                  />
                   <button
-                    onClick={() => {
-                      const stageName = `new_stage_${
-                        Object.keys(pipelineStages).length + 1
-                      }`;
-                      setPipelineStages({
-                        ...pipelineStages,
-                        [stageName]: {
-                          originalName: stageName,
-                          name: "",
-                          description: "",
-                        },
-                      });
-                    }}
-                    className="border-2 p-2 border-black rounded-md"
-                  >
-                    Add Stage
-                  </button>
-                  <button
-                    className="border-2 p-2 border-black rounded-md"
-                    onClick={submitStageReview}
+                    className="py-2 px-3 my-5 border-2 border-black  rounded-md font-black text-sm"
+                    onClick={submitStages}
                   >
                     Next
                   </button>
                 </>
               )}
-            {Object.values(generatedModels).length > 0 && (
-              <>
-                <textarea
-                  value={modelEditor}
-                  onChange={(e) => setModelEditor(e.target.value)}
-                />
-                <button
-                  className="border-2 p-2 border-black rounded-md"
-                  onClick={submitStages}
-                >
-                  Next
-                </button>
-              </>
-            )}
+            {Object.values(generatedModels).length > 0 &&
+              modelEditor === "done" && (
+                <>
+                  <h4 className="font-black text-3xl mb-3 col-span-2">
+                    Pipeline complete
+                  </h4>
+                  <button
+                    className="py-2 px-3 my-5 border-2 border-black rounded-md font-black text-sm min-w-[max-content_auto]"
+                    onClick={submitStages}
+                  >
+                    Start over
+                  </button>
+                </>
+              )}
           </>
         )}
       </div>
