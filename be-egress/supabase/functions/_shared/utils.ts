@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import * as path from "https://deno.land/std/path/mod.ts";
 import * as YAML from "https://esm.sh/yaml";
 
-const openaiApiKey = "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";
+const openaiApiKey = "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";
 
 const supabaseClient = createClient(
   // Supabase API URL - env var exported by default.

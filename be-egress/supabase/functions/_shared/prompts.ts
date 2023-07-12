@@ -5,7 +5,7 @@ Your job is to write clear, plain-english description of this model from its nam
 Keep in mind conventions for naming in models in dbt. For example, "stg" is a common prefix for staging models, "int" is a common prefix for intermediate models, and "dim" is a common prefix for dimension models.
 Model names will often also contain useful information such as the entity type, the grain of the model, and the type of transformation that is applied.
 
-For example, a good description for a model called int_payments_pivoted_to_orders.sql would be: An intermediate model that aggregates payments to the order level
+For example, a good description for a model called int_payments_pivoted_to_orders would be: An intermediate model that aggregates payments to the order level
 
 Using all these clues please write your best one sentence description of the model called ${modelName}. Please respond with just the description and nothing else. 
 
@@ -24,7 +24,7 @@ ${modelChoices}
 
 You should choose which parent models to suggest based on the name of the new model and its description. You should suggest the fewest number of parents necessary to complete the job.
 Please respond with a valid JSON array of strings with the names of the chosen parents models. Respond with only this list and nothing else.
-For example, for a model called int_orders_pivoted_to_customers.sql you might respond with: ["stg_customers.sql", "stg_orders.sql"]
+For example, for a model called int_orders_pivoted_to_customers you might respond with: ["stg_customers", "stg_orders"]
 `;
 
 const generateModelColumnsPrompt = (
@@ -43,7 +43,7 @@ const generateModelColumnsPrompt = (
   Also consider any new aggregations or calculated fields that the new model's specification might indicate.
   
   Please respond with a valid JSON array of strings with the names of the chosen columns. Respond with only this list and nothing else.
-  For example, for a model called int_orders_pivoted_to_customers.sql you might respond with: ["customer_id", "order_count", "most_recent_order_date", "first_order_date"]
+  For example, for a model called int_orders_pivoted_to_customers you might respond with: ["customer_id", "order_count", "most_recent_order_date", "first_order_date"]
   `;
 
 const generateModelSqlPrompt = (
