@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import LogoutButton from "../components/LogoutButton";
 import Home from "./components/Home";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
 
 export default async function Index() {
   const supabase = createServerComponentClient({ cookies });
@@ -20,10 +22,10 @@ export default async function Index() {
         <div className="w-full flex justify-between items-center p-3 text-foreground">
           <div className=" text-black font-black text-lg ml-4">Egress </div>          
 
-          <div>
-            {user ? (
+          <div className="mr-4">
+            {/* {user ? (
               <div className="flex items-right gap-4 items-center justify-center">
-                Hey, {user.email}!
+                hello, {user.email}
                 <LogoutButton />
               </div>
             ) : (
@@ -33,7 +35,8 @@ export default async function Index() {
               >
                 login
               </Link>
-            )}
+            )} */}
+            <FontAwesomeIcon icon={faGear}/>
           </div>
         </div>
       </nav>

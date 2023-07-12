@@ -91,3 +91,11 @@ verify_jwt = false
 [functions.generate-stage]
 verify_jwt = false
 
+[functions.generate-model-columns]
+verify_jwt = false
+
+[functions.generate-model-description]
+verify_jwt = false
+
+[functions.generate-model-parents]
+verify_jwt = false
