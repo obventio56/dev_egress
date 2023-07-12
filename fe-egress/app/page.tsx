@@ -29,9 +29,9 @@ export default async function Index() {
             ) : (
               <Link
                 href="/login"
-                className="py-2 px-3 my-5 border-2 border-black  rounded-md font-black text-sm"
+                className="py-2 px-3 my-5 border-2 border-black  rounded-md text-sm"
               >
-                Login
+                login
               </Link>
             )}
           </div>

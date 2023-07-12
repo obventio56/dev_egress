@@ -16,10 +16,10 @@ export default function LogoutButton() {
 
   return (
     <button
-      className="py-2 px-3 my-5 border-2 border-black  rounded-md font-black text-sm"
+      className="py-2 px-3 my-5 border-2 border-black  rounded-md text-sm"
       onClick={signOut}
     >
-      Logout
+      logout
     </button>
   )
 }

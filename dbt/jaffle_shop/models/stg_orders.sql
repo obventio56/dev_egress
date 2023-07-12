@@ -4,4 +4,5 @@ select
     order_date,
     status
 
+
 from {{source('jaffle_shop', 'orders')}}
