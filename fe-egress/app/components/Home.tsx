@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { createClient } from "@supabase/supabase-js";
 import Image from "next/image";
 import Video from "next/video";
@@ -25,12 +25,23 @@ export default function Home({ models }) {
   const [editingModel, setEditingModel] = useState(false);
 
   const [newColumnName, setNewColumnName] = useState("");
+  const [modelSearchString, setModelSearchString] = useState("");
 
   const [modelName, setModelName] = useState("");
   const [modelDescription, setModelDescription] = useState("");
   const [modelParents, setModelParents] = useState([]);
   const [modelColumns, setModelColumns] = useState({});
   const [modelSql, setModelSql] = useState("");
+
+  const filteredModelList = useMemo(() => {
+    if (!models.models || !modelSearchString) return [];
+
+    return models.models
+      .filter((model) =>
+        model.name.toLowerCase().includes(modelSearchString.toLowerCase())
+      )
+      .slice(0, 4);
+  }, [modelSearchString]);
 
   const submitModelName = async (modelNameValue: string) => {
     setLoadingModelDescription(true);
@@ -71,10 +82,10 @@ export default function Home({ models }) {
   };
 
   const submitModelGeneration = async (
-    modelNameValue,
-    modelDescriptionValue,
-    modelParentsValue,
-    modelColumnsDict
+    modelNameValue: string,
+    modelDescriptionValue: string,
+    modelParentsValue: string[],
+    modelColumnsDict: Record<string, string>
   ) => {
     setLoadingModelSql(true);
     setEditingModel(true);
@@ -162,7 +173,7 @@ export default function Home({ models }) {
             )}
           </div>
         )}
-        <div className="col-start-1 col-span-1 row-start-1 row-span-1 px-7 py-5">
+        <div className="col-start-1 col-span-1 row-start-1 row-span-1 px-7 py-5 ">
           {specifyingModel && (
             <>
               <h2 className="text-lg font-bold">Parent Models</h2>
@@ -202,11 +213,37 @@ export default function Home({ models }) {
                       </li>
                     ))}
                   </ul>
-                  <input
-                    className="mt-5 rounded-md px-2 py-1 border-2 border-black text-sm "
-                    type="text"
-                    placeholder="search models"
-                  />
+                  <div className="grid grid-cols-1 grid-rows-[auto_auto] gap-2 w-fit items-center">
+                    <input
+                      className="mt-5 rounded-md px-2 py-1 border-2 border-black text-sm "
+                      type="text"
+                      placeholder="search models"
+                      value={modelSearchString}
+                      onChange={(e) => setModelSearchString(e.target.value)}
+                    />
+                    {filteredModelList.length > 0 && (
+                      <ul className="border-2 border-black rounded-md text-xs w-fit">
+                        {filteredModelList.map((model) => (
+                          <li
+                            className="grid grid-cols-1 grid-rows-2 px-2 py-1 border-b-2 border-b-black hover:bg-gray-200 cursor-pointer last:border-b-0"
+                            onClick={() => {
+                              if (modelParents.includes(model.name)) return;
+                              const newModelParents = [
+                                ...modelParents,
+                                model.name,
+                              ];
+                              setModelParents(newModelParents);
+                            }}
+                          >
+                            <span>{model.name}.sql</span>
+                            <span className=" text-gray-500">
+                              {model.description.slice(0, 30)}...
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </>
               )}
             </>
