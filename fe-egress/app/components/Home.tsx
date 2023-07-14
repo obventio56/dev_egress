@@ -1,8 +1,6 @@
 "use client";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { createClient } from "@supabase/supabase-js";
-import Image from "next/image";
-import Video from "next/video";
 import { Oval } from "react-loader-spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -235,8 +233,12 @@ export default function Home({ models }) {
                       <>
                         {previewError ? (
                           <div className="max-w-full overflow-x-scroll my-3">
-                            <span className=" text-red-400">There was an error:</span>
-                          <pre className="text-xs font-mono max-w-full">{previewError}</pre>
+                            <span className=" text-red-400">
+                              There was an error:
+                            </span>
+                            <pre className="text-xs font-mono max-w-full">
+                              {previewError}
+                            </pre>
                           </div>
                         ) : (
                           <div
@@ -244,7 +246,9 @@ export default function Home({ models }) {
                               previewResults[0]
                             )
                               .map((_) => "min-content")
-                              .join("_")}] grid-rows-[auto] border border-black rounded-md`}
+                              .join(
+                                "_"
+                              )}] grid-rows-[auto] border border-black rounded-md`}
                           >
                             {Object.keys(previewResults[0]).map(
                               (columnHeader, idx) => (
