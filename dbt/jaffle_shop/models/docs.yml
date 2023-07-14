@@ -1,28 +1,30 @@
 models:
-- name: stg_customers
-  description: This table stores information about customers in the Jaffle Shop,
-    including their unique identifier, first name, and last name.
-  columns:
-    - name: ID
-      description: The unique identifier for each customer in the Jaffle Shop.
-    - name: FIRST_NAME
-      description: The given column contains the first names of customers in the
-        jaffle shop database.
-    - name: LAST_NAME
-      description: The last name of the customers in the jaffle shop database.
-- name: stg_orders
-  description: This table stores information about orders placed at the jaffle
-    shop, including unique identifiers, user IDs, order dates, order
-    statuses, and timestamps indicating when the orders were loaded into the
-    database.
-  columns:
-    - name: ID
-      description: A unique identifier associated with orders placed at the jaffle shop.
-    - name: USER_ID
-      description: The identifier for the user associated with an order.
-    - name: ORDER_DATE
-      description: The date when an order was placed.
-    - name: STATUS
-      description: The status of the order or task.
-    - name: _ETL_LOADED_AT
-      description: The timestamp when the orders were loaded into the database.
+  - name: stg_customers
+    description:
+      This table stores information about customers in the Jaffle Shop,
+      including their unique identifier, first name, and last name.
+    columns:
+      - name: customer_id
+        description: The unique identifier for each customer in the Jaffle Shop.
+      - name: first_name
+        description:
+          The given column contains the first names of customers in the
+          jaffle shop database.
+      - name: last_name
+        description: The last name of the customers in the jaffle shop database.
+  - name: stg_orders
+    description: This table stores information about orders placed at the jaffle
+      shop, including unique identifiers, user IDs, order dates, order
+      statuses, and timestamps indicating when the orders were loaded into the
+      database.
+    columns:
+      - name: order_id
+        description: A unique identifier associated with orders placed at the jaffle shop.
+      - name: customer_id
+        description: The identifier for the user associated with an order.
+      - name: order_date
+        description: The date when an order was placed.
+      - name: status
+        description: The status of the order or task.
+      - name: _ETL_LOADED_AT
+        description: The timestamp when the orders were loaded into the database.

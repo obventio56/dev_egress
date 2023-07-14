@@ -21,6 +21,7 @@ export default function Home({ models }) {
   const [loadingModelColumns, setLoadingModelColumns] = useState(false);
   const [loadingModelDescription, setLoadingModelDescription] = useState(false);
   const [loadingModelSql, setLoadingModelSql] = useState(false);
+  const [loadingPreview, setLoadingPreivew] = useState(false);
   const [specifyingModel, setSpecifyingModel] = useState(false);
   const [editingModel, setEditingModel] = useState(false);
 
@@ -32,6 +33,11 @@ export default function Home({ models }) {
   const [modelParents, setModelParents] = useState([]);
   const [modelColumns, setModelColumns] = useState({});
   const [modelSql, setModelSql] = useState("");
+  const [previewResults, setPreviewResults] = useState([]);
+
+  const [previewError, setPreviewError] = useState(null);
+
+  const [editorMode, setEditorMode] = useState("sql");
 
   const filteredModelList = useMemo(() => {
     if (!models.models || !modelSearchString) return [];
@@ -105,6 +111,33 @@ export default function Home({ models }) {
     setLoadingModelSql(false);
   };
 
+  const getModelPreview = async () => {
+    setLoadingPreivew(true);
+    setPreviewError(null);
+    setEditorMode("preview");
+
+    if (!modelSql) return;
+    console.log(modelSql);
+    const {
+      data: { preview, error },
+    } = await supabaseClient.functions.invoke("generate-model-preview", {
+      body: {
+        query: modelSql,
+      },
+    });
+
+    if (preview.error) {
+      setPreviewError(preview.error);
+      setLoadingPreivew(false);
+      console.log(preview.error);
+      return;
+    }
+
+    console.log(preview);
+    setPreviewResults(preview);
+    setLoadingPreivew(false);
+  };
+
   return (
     <div className="grid grid-cols-auto grid-rows-[30px_auto]">
       <div className="text-xs flex px-7 py-1 font-mono items-center justify-between grid-col-1 grid-row-1">
@@ -151,10 +184,20 @@ export default function Home({ models }) {
               <div className="w-3/4 grid grid-cols-1 grid-rows-[40px_auto]">
                 <div className="flex justify-between grid-row-1 row-span-1">
                   <div className="flex gap-1 items-start">
-                    <button className="text-sm text-white border-black border-2 bg-black rounded-md py-1 px-2">
+                    <button
+                      className={`text-sm  border-black border-2  rounded-md py-1 px-2 ${
+                        editorMode === "sql" ? "bg-black text-white" : ""
+                      }`}
+                      onClick={() => setEditorMode("sql")}
+                    >
                       sql editor
                     </button>
-                    <button className="text-sm border-2 border-black rounded-md py-1 px-2">
+                    <button
+                      className={`text-sm  border-black border-2  rounded-md py-1 px-2 ${
+                        editorMode === "preview" ? "bg-black text-white" : ""
+                      }`}
+                      onClick={getModelPreview}
+                    >
                       query preview
                     </button>
                   </div>
@@ -164,11 +207,79 @@ export default function Home({ models }) {
                     </button>
                   </div>
                 </div>
-                <textarea
-                  className="w-full h-full font-mono text-sm border-2 border-black rounded-md px-5 py-3 grid-row-2 row-span-1"
-                  value={modelSql}
-                  onChange={(e) => setModelSql(e.target.value)}
-                />
+                {editorMode === "sql" && (
+                  <textarea
+                    className="w-full h-full font-mono text-sm border-2 border-black rounded-md px-5 py-3 grid-row-2 row-span-1"
+                    value={modelSql}
+                    onChange={(e) => setModelSql(e.target.value)}
+                  />
+                )}
+                {editorMode === "preview" && (
+                  <div className="w-full h-full">
+                    {loadingPreview ? (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Oval
+                          height={40}
+                          width={40}
+                          color="#000000"
+                          wrapperStyle={{}}
+                          wrapperClass=""
+                          visible={true}
+                          ariaLabel="oval-loading"
+                          secondaryColor="rgb(249, 250, 251)"
+                          strokeWidth={5}
+                          strokeWidthSecondary={5}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        {previewError ? (
+                          <div className="max-w-full overflow-x-scroll my-3">
+                            <span className=" text-red-400">There was an error:</span>
+                          <pre className="text-xs font-mono max-w-full">{previewError}</pre>
+                          </div>
+                        ) : (
+                          <div
+                            className={`grid grid-cols-[${Object.keys(
+                              previewResults[0]
+                            )
+                              .map((_) => "min-content")
+                              .join("_")}] grid-rows-[auto] border border-black rounded-md`}
+                          >
+                            {Object.keys(previewResults[0]).map(
+                              (columnHeader, idx) => (
+                                <div
+                                  className={`p-1 border border-black font-bold row-start-1 row-span-1 col-span-1 col-start-${
+                                    idx + 1
+                                  }`}
+                                >
+                                  {columnHeader.toLocaleLowerCase()}
+                                </div>
+                              )
+                            )}
+                            {previewResults.map((row, rowIdx) => (
+                              <>
+                                {Object.values(row).map(
+                                  (columnValue, colIdx) => (
+                                    <div
+                                      className={`row-start-${
+                                        rowIdx + 2
+                                      } p-1 border border-black row-span-1 text-gray-700 col-span-1 col-start-${
+                                        colIdx + 1
+                                      }`}
+                                    >
+                                      {columnValue}
+                                    </div>
+                                  )
+                                )}
+                              </>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>

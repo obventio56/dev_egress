@@ -99,3 +99,6 @@ verify_jwt = false
 
 [functions.generate-model-parents]
 verify_jwt = false
+
+[functions.generate-model-preview]
+verify_jwt = false
