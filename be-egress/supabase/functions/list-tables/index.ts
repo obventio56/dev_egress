@@ -52,7 +52,7 @@ const loadModels = async () => {
   const yamlFiles = await findYamlFiles("");
 
   let models = [];
-
+  let sources = [];
   for (const file of yamlFiles) {
     const { data: fileBlob } = await supabaseClient.storage
       .from("dbt-projects")
@@ -64,17 +64,31 @@ const loadModels = async () => {
     if (Array.isArray(config?.models)) {
       models = models.concat(config.models);
     }
+
+    if (Array.isArray(config?.sources)) {
+      console.log(config.sources);
+      const newSources = config.sources[0].tables.map((t) => {
+        return {
+          ...t,
+          database: config.sources.database,
+          schema: config.sources.schema,
+          type: "source",
+        };
+      });
+      sources = sources.concat(newSources);
+    }
   }
 
-  return models;
+  return { sources, models };
 };
 
 serve(async (_req) => {
-  const models = await loadModels();
-  console.log(models);
+  const { models, sources } = await loadModels();
+  console.log(models, sources);
 
   const data = {
     models,
+    sources,
   };
 
   return new Response(JSON.stringify(data), {

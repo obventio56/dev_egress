@@ -10,7 +10,7 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
-export default function Home({ models }) {
+export default function Home({ models: { models: dbtModels, sources } }) {
   const supabaseClient = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -36,6 +36,13 @@ export default function Home({ models }) {
   const [previewError, setPreviewError] = useState(null);
 
   const [editorMode, setEditorMode] = useState("sql");
+
+  const models = useMemo(() => {
+    console.log(dbtModels, sources);
+    return { models: [...dbtModels, ...sources] };
+  }, []);
+
+  console.log(models);
 
   const filteredModelList = useMemo(() => {
     if (!models.models || !modelSearchString) return [];
@@ -161,6 +168,24 @@ export default function Home({ models }) {
         </div>
       </div>
       <div className="grid grid-cols-[max-content_auto_max-content] grid-rows-[auto_100px] grid-col-1 grid-row-1 row-start-2">
+        {!editingModel && !specifyingModel && (
+          <div className="col-start-2 col-span-1 row-start-1 row-span-1 w-2/5 h-[500px] overflow-y-scroll justify-self-center mt-5">
+            <div className="flex items-center justify-start gap-2 ">
+              <h1 className="font-bold">Catalog</h1>{" "}
+              <span className="text-sm text-gray-700">
+                - models and sources in the demo project you can interact with.
+              </span>
+            </div>
+            <ul className=" text-xs w-fit  max-w-full ">
+              {models.models.map((model) => (
+                <li className="grid grid-cols-1 grid-rows-[auto_auto] px-2 py-3 border-b-2 border-b-black   last:border-b-0">
+                  <span>{model.name}.sql</span>
+                  <span className=" text-gray-500">{model.description}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {editingModel && (
           <div className="grid-col-2 col-span-1 grid-row-1 row-span-1 py-5 flex justify-center">
             {loadingModelSql ? (
@@ -198,9 +223,24 @@ export default function Home({ models }) {
                     >
                       query preview
                     </button>
+                    <button
+                      disabled
+                      className="text-sm  border-black border-2  rounded-md py-1 px-2"
+                    >
+                      tests (coming soon)
+                    </button>
+                    <button
+                      disabled
+                      className="text-sm  border-black border-2  rounded-md py-1 px-2"
+                    >
+                      docs (coming soon)
+                    </button>
                   </div>
                   <div className="flex gap-1 items-start">
-                    <button className="text-sm border-2 border-black rounded-md py-1 px-2">
+                    <button
+                      disabled
+                      className="text-sm border-2 border-black rounded-md py-1 px-2"
+                    >
                       commit model
                     </button>
                   </div>

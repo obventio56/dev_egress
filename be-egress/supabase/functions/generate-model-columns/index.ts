@@ -14,7 +14,8 @@ serve(async (req) => {
 
   const { modelName, modelDescription, modelParents } = await req.json();
 
-  const allModels = await loadModels();
+  const loadModelsRes = await loadModels();
+  const allModels = [...loadModelsRes.models, ...loadModelsRes.sources];
   const filteredModels = allModels.filter((m) => modelParents.includes(m.name));
 
   const modelNamePrompt = generateModelColumnsPrompt(

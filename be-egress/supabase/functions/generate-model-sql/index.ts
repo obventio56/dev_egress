@@ -18,8 +18,9 @@ serve(async (req) => {
   const { modelName, modelDescription, modelParents, modelColumns } =
     await req.json();
 
-  const allModels = await loadModels();
-  const filteredModels = allModels.filter((m) => modelParents.includes(m.name));
+    const loadModelsRes = await loadModels();
+    const allModels = [...loadModelsRes.models, ...loadModelsRes.sources];
+    const filteredModels = allModels.filter((m) => modelParents.includes(m.name));
 
   const modelSqlPrompt = generateModelSqlPrompt(
     modelName,

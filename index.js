@@ -10,7 +10,7 @@ const {
   generateIntermediateModelPrompt,
 } = require("./prompts");
 
-const openaiApiKey = "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";
+const openaiApiKey = "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";
 
 const openAIClient = axios.create({
   baseURL: "https://api.openai.com/v1/",
@@ -207,46 +207,49 @@ const destinationColumns = [
 ];
 
 (async () => {
-  const models = loadModels(".");
-  const queryModels = {
-    models: models.filter((m) => useModels.includes(m.name)),
-  };
 
-  const chain = [
-    {
-      role: "user",
-      content: generatePipelineStepsPrompt(
-        YAML.stringify(queryModels),
-        destinationColumns
-      ),
-    },
-  ];
 
-  const stepsRaw = await prompt(chain);
-  const steps = JSON.parse(stepsRaw);
-  chain.push({ role: "assistant", content: stepsRaw });
 
-  for (const step of steps) {
-    const stepPrompt = generateIntermediateModelPrompt(step.name);
-    chain.push({ role: "user", content: stepPrompt });
-    const stepResult = await prompt(chain);
-    chain.push({ role: "assistant", content: stepResult });
-    console.log(stepResult);
-  }
-  // const conn = await getSnowflakeConnection(connection);
-  // const descriptions = await describeSchema(conn, "raw.stripe");
+  // const models = loadModels(".");
+  // const queryModels = {
+  //   models: models.filter((m) => useModels.includes(m.name)),
+  // };
 
-  // const yaml = YAML.stringify({
-  //   sources: [
-  //     {
-  //       name: "stripe",
-  //       database: "raw",
-  //       schema: "stripe",
-  //       tables: descriptions,
-  //     },
-  //   ],
-  // });
+  // const chain = [
+  //   {
+  //     role: "user",
+  //     content: generatePipelineStepsPrompt(
+  //       YAML.stringify(queryModels),
+  //       destinationColumns
+  //     ),
+  //   },
+  // ];
 
-  // console.log(yaml);
+  // const stepsRaw = await prompt(chain);
+  // const steps = JSON.parse(stepsRaw);
+  // chain.push({ role: "assistant", content: stepsRaw });
+
+  // for (const step of steps) {
+  //   const stepPrompt = generateIntermediateModelPrompt(step.name);
+  //   chain.push({ role: "user", content: stepPrompt });
+  //   const stepResult = await prompt(chain);
+  //   chain.push({ role: "assistant", content: stepResult });
+  //   console.log(stepResult);
+  // }
+  const conn = await getSnowflakeConnection(connection);
+  const descriptions = await describeSchema(conn, "pc_dbt_db.dbt_apedersen");
+
+  const yaml = YAML.stringify({
+    sources: [
+      {
+        name: "pc_dbt_db",
+        database: "dbt_apedersen",
+        schema: "pc_dbt_db",
+        tables: descriptions,
+      },
+    ],
+  });
+
+  console.log(yaml);
 })();
 

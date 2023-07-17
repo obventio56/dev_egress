@@ -1,0 +1,367 @@
+sources:
+  - name: jaffle_shop
+    database: raw
+    schema: jaffle_shop
+    tables:
+      - name: customers
+        description:
+          This table stores information about customers in the Jaffle Shop,
+          including their unique identifier, first name, and last name.
+        columns:
+          - name: ID
+            description: The unique identifier for each customer in the Jaffle Shop.
+          - name: FIRST_NAME
+            description:
+              The given column contains the first names of customers in the
+              jaffle shop database.
+          - name: LAST_NAME
+            description: The last name of the customers in the jaffle shop database.
+      - name: orders
+        description:
+          This table stores information about orders placed at the jaffle
+          shop, including unique identifiers, user IDs, order dates, order
+          statuses, and timestamps indicating when the orders were loaded into the
+          database.
+        columns:
+          - name: ID
+            description: A unique identifier associated with orders placed at the jaffle shop.
+          - name: USER_ID
+            description: The identifier for the user associated with an order.
+          - name: ORDER_DATE
+            description: The date when an order was placed.
+          - name: STATUS
+            description: The status of the order or task.
+          - name: _ETL_LOADED_AT
+            description: The timestamp when the orders were loaded into the database.
+  - name: stripe
+    database: raw
+    schema: stripe
+    tables:
+      - name: payment
+        description:
+          This table contains information about payment transactions made
+          using different payment methods, their corresponding statuses,
+          amounts, and creation dates, along with identifiers for both the
+          payment transaction and the associated order within the dataset. The
+          table also includes a timestamp for when payment records were batched.
+        columns:
+          - name: ID
+            description:
+              The identifier associated with a payment transaction in the Stripe
+              database.
+          - name: ORDERID
+            description: The identifier for a particular order within the dataset.
+          - name: PAYMENTMETHOD
+            description: The method used for making payments.
+          - name: STATUS
+            description: The status of the payment transaction.
+          - name: AMOUNT
+            description: The payment amount made for a specific order.
+          - name: CREATED
+            description: The date and time when a payment was created.
+          - name: _BATCHED_AT
+            description: The timestamp when payment records were batched.
+  - name: pc_dbt_db
+    database: dbt_apedersen
+    schema: pc_dbt_db
+    tables:
+      - name: CAMPAIGN_DESC
+        description:
+          This table contains information about campaigns, including their
+          type or category, identifier, starting day, and ending day.
+        columns:
+          - name: DESCRIPTION
+            description:
+              The description of this column is "The type or category of a
+              campaign."
+          - name: CAMPAIGN
+            description: The identifier for a specific campaign within the database.
+          - name: START_DAY
+            description: The numeric value representing the starting day of a campaign.
+          - name: END_DAY
+            description: The day on which a campaign comes to an end.
+      - name: CAMPAIGN_TABLE
+        description:
+          This table represents the purpose or type of campaign along with
+          the associated household identification number and the identifier
+          assigned to a particular marketing campaign.
+        columns:
+          - name: DESCRIPTION
+            description: The purpose or type of campaign being referred to.
+          - name: HOUSEHOLD_KEY
+            description: An identification number associated with each household.
+          - name: CAMPAIGN
+            description: The identifier assigned to a particular marketing campaign.
+      - name: CAUSAL_DATA
+        description:
+          This table contains data regarding the presence or absence of
+          displays and promotional material, associated with specific products
+          and stores during different weeks.
+        columns:
+          - name: PRODUCT_ID
+            description: The identifier for a particular product in the causal data table.
+          - name: STORE_ID
+            description: The identifier for a specific store in the database.
+          - name: WEEK_NO
+            description: The week number in which certain data is associated.
+          - name: DISPLAY
+            description:
+              A numeric representation indicating whether a display was utilized
+              or not.
+          - name: MAILER
+            description:
+              The identifier representing a specific type or category of
+              promotional material.
+      - name: COUPON
+        description:
+          This table contains records of coupons associated with specific
+          products and marketing campaigns, including the unique identifier of
+          the coupon, the identifier of the product, and the identifier of the
+          campaign.
+        columns:
+          - name: COUPON_UPC
+            description: The identifier associated with a coupon.
+          - name: PRODUCT_ID
+            description:
+              The identifier associated with a specific product in the coupon
+              records.
+          - name: CAMPAIGN
+            description: The identifier for a specific marketing campaign.
+      - name: COUPON_REDEMPT
+        description:
+          This table represents the records of coupon redemption in the
+          database, including unique identifiers for households, numeric
+          representation of specific days, unique identifiers for coupons, and
+          identifiers for specific campaigns.
+        columns:
+          - name: HOUSEHOLD_KEY
+            description:
+              A unique identifier assigned to individual households in the coupon
+              redemption database.
+          - name: DAY
+            description: The numeric representation of a specific day.
+          - name: COUPON_UPC
+            description: The unique identifier assigned to a specific coupon for redemption.
+          - name: CAMPAIGN
+            description: The identifier for a specific campaign.
+      - name: CUSTOMERS
+        description:
+          This table represents customer information and their order history,
+          including the first and most recent order dates, the total number of
+          orders placed, and an estimation of the customer's lifetime value to
+          the business.
+        columns:
+          - name: CUSTOMER_ID
+            description: A unique identifier for each customer in the database.
+          - name: FIRST_NAME
+            description: The given column represents the first name of the customers.
+          - name: LAST_NAME
+            description: The last name of the customers in the database table.
+          - name: FIRST_ORDER
+            description: The date of the first order made by the customer.
+          - name: MOST_RECENT_ORDER
+            description: The date of the most recent order made by a customer.
+          - name: NUMBER_OF_ORDERS
+            description: The number of orders placed by the customers.
+          - name: CUSTOMER_LIFETIME_VALUE
+            description:
+              The estimated value of a customer's overall contributions to the
+              business throughout their entire relationship with the company.
+      - name: HH_DEMOGRAPHIC
+        description:
+          This table represents demographic information for households,
+          including age groups, marital status, income range, homeownership
+          status, household composition, household size, categorization of
+          children, and a unique identifier for each household.
+        columns:
+          - name: AGE_DESC
+            description:
+              The description of the column "AGE_DESC" is the range or category
+              description of the age group in a household.
+          - name: MARITAL_STATUS_CODE
+            description:
+              The marital status of the individuals within the household
+              demographic.
+          - name: INCOME_DESC
+            description:
+              The description of the column "INCOME_DESC" is the description of
+              the income range of a household.
+          - name: HOMEOWNER_DESC
+            description:
+              The description of the column "HOMEOWNER_DESC" is the description
+              of the homeownership status of a household.
+          - name: HH_COMP_DESC
+            description: 'A description of the column HH_COMP_DESC in the table
+              PC_DBT_DB.DBT_APEDERSEN.HH_DEMOGRAPHIC would be: "The composition
+              description of the household."'
+          - name: HOUSEHOLD_SIZE_DESC
+            description:
+              "Description: Indicates the number of individuals residing in a
+              household."
+          - name: KID_CATEGORY_DESC
+            description:
+              The description of the column "KID_CATEGORY_DESC" in the table is
+              "The category description for children in a household."
+          - name: HOUSEHOLD_KEY
+            description:
+              A unique identifier assigned to each household without any
+              particular properties or characteristics.
+      - name: MY_FIRST_DBT_MODEL
+        description: This table contains unique records with an identifier for each record.
+        columns:
+          - name: ID
+            description: The identifier for the unique records in the table.
+      - name: ORDERS
+        description:
+          This table contains information about orders made within the
+          database, including unique identifiers for each order and customer,
+          order dates, order statuses, and various amounts of money associated
+          with the orders.
+        columns:
+          - name: ORDER_ID
+            description:
+              A unique identifier associated with each order made within the
+              database.
+          - name: CUSTOMER_ID
+            description: The unique identifier for each customer.
+          - name: ORDER_DATE
+            description: The date when the order was made.
+          - name: STATUS
+            description: The status of the order.
+          - name: CREDIT_CARD_AMOUNT
+            description: The amount of money paid using a credit card for a specific order.
+          - name: COUPON_AMOUNT
+            description: The amount of money deducted from the total order using a coupon.
+          - name: BANK_TRANSFER_AMOUNT
+            description:
+              The amount of money transferred through bank transactions for the
+              orders in the given table.
+          - name: GIFT_CARD_AMOUNT
+            description: The amount of credit available on a gift card for an order.
+          - name: AMOUNT
+            description: The monetary value associated with an order.
+      - name: PRODUCT
+        description:
+          This table represents a collection of diverse products, each
+          identified by a unique identifier, featuring information about their
+          manufacturer, department, brand, category description, detailed
+          description, and current size.
+        columns:
+          - name: PRODUCT_ID
+            description: The identifier assigned to a particular product in the database.
+          - name: MANUFACTURER
+            description:
+              The entity responsible for creating or producing the item listed in
+              the current row.
+          - name: DEPARTMENT
+            description: The category or type of the product.
+          - name: BRAND
+            description: The brand of the product.
+          - name: COMMODITY_DESC
+            description:
+              The description would be "The description of the category or type
+              of the product."
+          - name: SUB_COMMODITY_DESC
+            description:
+              The description for the column "SUB_COMMODITY_DESC" is "The
+              detailed description of a specific type or variation of a
+              product."
+          - name: CURR_SIZE_OF_PRODUCT
+            description:
+              The current size of the product in terms of measurement or
+              quantity.
+      - name: RAW_CUSTOMERS
+        description:
+          This table stores information about individual customers, including
+          their unique identifier, first name, and last name.
+        columns:
+          - name: ID
+            description: The identifier for customers within the database.
+          - name: FIRST_NAME
+            description: The given column contains the first names of customers.
+          - name: LAST_NAME
+            description: The last name of the customers.
+      - name: RAW_ORDERS
+        description: The table stores information about orders placed by users,
+          including unique identifiers, dates, and the current status of each
+          order.
+        columns:
+          - name: ID
+            description: The unique identifier assigned to each order.
+          - name: USER_ID
+            description:
+              The identifier for a user associated with each order in the raw
+              orders table.
+          - name: ORDER_DATE
+            description: The date when an order was placed.
+          - name: STATUS
+            description: The current state or progress of the orders.
+      - name: RAW_PAYMENTS
+        description:
+          This table contains records of payment transactions, including the
+          identifier, order reference, payment method, and corresponding
+          monetary value.
+        columns:
+          - name: ID
+            description: The identifier for the entries in the payments table.
+          - name: ORDER_ID
+            description: The identifier for an order transaction.
+          - name: PAYMENT_METHOD
+            description: The method used for making a payment.
+          - name: AMOUNT
+            description: The monetary value associated with a payment transaction.
+      - name: STG_ORDERS
+        description:
+          This table represents a collection of orders made by customers,
+          including their unique identifiers, order placement dates, and the
+          corresponding order statuses.
+        columns:
+          - name: ORDER_ID
+            description: The identifier associated with an order in the database.
+          - name: CUSTOMER_ID
+            description: The unique identifier assigned to each customer in the orders.
+          - name: ORDER_DATE
+            description: The date the order was placed.
+          - name: STATUS
+            description: The status of the orders in the table.
+      - name: TRANSACTION_DATA
+        description:
+          This table stores transaction data containing details such as
+          household, basket, day, product, quantity, sales value, store, retail
+          and coupon discounts, transaction time, and week number.
+        columns:
+          - name: HOUSEHOLD_KEY
+            description:
+              A unique identifier representing a specific household in the
+              transaction dataset.
+          - name: BASKET_ID
+            description: The identifier assigned to a specific shopping transaction.
+          - name: DAY
+            description: The numeric representation of the day associated with a
+              transaction.
+          - name: PRODUCT_ID
+            description:
+              The identifier for the specific product in the given transaction
+              data.
+          - name: QUANTITY
+            description: The quantity of a product purchased or sold in a transaction.
+          - name: SALES_VALUE
+            description: The value representing the amount spent on a purchase transaction.
+          - name: STORE_ID
+            description:
+              The identifier for the specific store associated with each
+              transaction.
+          - name: RETAIL_DISC
+            description:
+              The discount amount applied to the retail price of a product during
+              a transaction.
+          - name: TRANS_TIME
+            description: The time at which a transaction took place.
+          - name: WEEK_NO
+            description: The week number in which a transaction occurred.
+          - name: COUPON_DISC
+            description: The amount of discount applied from a coupon for each transaction.
+          - name: COUPON_MATCH_DISC
+            description:
+              The amount of discount applied through matching coupons for a
+              particular transaction.

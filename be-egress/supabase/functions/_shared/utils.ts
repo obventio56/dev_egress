@@ -4,7 +4,6 @@ import * as YAML from "https://esm.sh/yaml";
 
 const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
 
-
 const supabaseClient = createClient(
   // Supabase API URL - env var exported by default.
   Deno.env.get("SUPABASE_URL")!,
@@ -77,7 +76,7 @@ const loadModels = async () => {
   const yamlFiles = await findYamlFiles("");
 
   let models = [];
-
+  let sources = [];
   for (const file of yamlFiles) {
     const { data: fileBlob } = await supabaseClient.storage
       .from("dbt-projects")
@@ -89,9 +88,21 @@ const loadModels = async () => {
     if (Array.isArray(config?.models)) {
       models = models.concat(config.models);
     }
+    if (Array.isArray(config?.sources)) {
+      console.log(config.sources);
+      const newSources = config.sources[0].tables.map((t) => {
+        return {
+          ...t,
+          database: config.sources.database,
+          schema: config.sources.schema,
+          type: "source",
+        };
+      });
+      sources = sources.concat(newSources);
+    }
   }
 
-  return models;
+  return { models, sources };
 };
 
 export { prompt, corsHeaders, supabaseClient, loadModels };
