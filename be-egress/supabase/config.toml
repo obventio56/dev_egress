@@ -106,6 +106,6 @@ verify_jwt = false
 
 [auth.external.github]
 enabled = true
-client_id = "env(SUPABASE_AUTH_GITHUB_CLIENT_ID)"
-secret = "env(SUPABASE_AUTH_GITHUB_SECRET)"
+client_id = "env(GITHUB_CLIENT_ID)"
+secret = "env(GITHUB_SECRET)"
 redirect_uri = "http://localhost:54321/auth/v1/callback"
