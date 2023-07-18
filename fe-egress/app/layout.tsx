@@ -1,6 +1,8 @@
 import "./globals.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 config.autoAddCss = false;
 
 export const metadata = {
@@ -17,7 +19,33 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <main className="min-h-screen bg-background flex flex-row items-stretch">
-          {children}
+          <div className="w-full grid grid-rows-[min-content_auto]">
+            <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+              <div className="w-full flex justify-between items-center p-3 text-foreground">
+                <div className=" text-black font-black text-lg ml-4">
+                  Egress{" "}
+                </div>
+
+                <div className="mr-4">
+                  {/* {user ? (
+              <div className="flex items-right gap-4 items-center justify-center">
+                hello, {user.email}
+                <LogoutButton />
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="py-2 px-3 my-5 border-2 border-black  rounded-md text-sm"
+              >
+                login
+              </Link>
+            )} */}
+                  <FontAwesomeIcon icon={faGear} />
+                </div>
+              </div>
+            </nav>
+            {children}
+          </div>
         </main>
       </body>
     </html>

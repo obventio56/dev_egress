@@ -1,6 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { useState, useMemo, useEffect } from "react";
 import { Oval } from "react-loader-spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,12 +8,21 @@ import {
   faSnowflake,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function Home({ models: { models: dbtModels, sources } }) {
-  const supabaseClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+  const supabaseClient = createClientComponentClient();
+
+  useEffect(() => {
+    (async () => {
+      const session = await supabaseClient.auth.getSession();
+      const userDB = await supabaseClient.auth.getUser();
+
+      const user = session?.user;
+      console.log(session, user, userDB);
+    })();
+  }, []);
+
   const [loadingParentModels, setLoadingParentModels] = useState(false);
   const [loadingModelColumns, setLoadingModelColumns] = useState(false);
   const [loadingModelDescription, setLoadingModelDescription] = useState(false);
@@ -38,11 +46,11 @@ export default function Home({ models: { models: dbtModels, sources } }) {
   const [editorMode, setEditorMode] = useState("sql");
 
   const models = useMemo(() => {
-    console.log(dbtModels, sources);
+    //console.log(dbtModels, sources);
     return { models: [...dbtModels, ...sources] };
   }, []);
 
-  console.log(models);
+  //console.log(models);
 
   const filteredModelList = useMemo(() => {
     if (!models.models || !modelSearchString) return [];
